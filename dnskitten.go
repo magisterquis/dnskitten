@@ -6,7 +6,7 @@ package main
  * Streams over DNS, minimally
  * By J. Stuart McMurray
  * Created 20180123
- * Last Modified 20180124
+ * Last Modified 20180125
  */
 
 import (
