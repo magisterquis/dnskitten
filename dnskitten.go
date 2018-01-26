@@ -221,7 +221,7 @@ func handleOutput(w dns.ResponseWriter, r *dns.Msg) {
 		/* Ignore case */
 		q.Name = strings.ToLower(q.Name)
 		/* Make sure we've not seen this before */
-		if seen, _ := CACHE.ContainsOrAdd(parts[1], true); seen {
+		if seen, _ := CACHE.ContainsOrAdd(q.Name, true); seen {
 			continue
 		}
 		/* Split label into payload and the rest */
