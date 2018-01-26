@@ -130,6 +130,8 @@ func handleInput(w dns.ResponseWriter, r *dns.Msg) {
 	var f func() (dns.RR, error) /* Function to return data from stdin */
 	INLOCK.Lock()
 	for _, q := range r.Question {
+		/* Ignore case */
+		q.Name = strings.ToLower(q.Name)
 
 		/* Prevent duplicate queries from getting more stdio than they
 		should  */
@@ -216,7 +218,13 @@ func handleOutput(w dns.ResponseWriter, r *dns.Msg) {
 	m.SetReply(r)
 
 	for _, q := range r.Question {
-		/* Get leftmost label, unhex it */
+		/* Ignore case */
+		q.Name = strings.ToLower(q.Name)
+		/* Make sure we've not seen this before */
+		if seen, _ := CACHE.ContainsOrAdd(parts[1], true); seen {
+			continue
+		}
+		/* Split label into payload and the rest */
 		parts := strings.SplitN(q.Name, ".", 2)
 		if 0 == len(parts) {
 			panic("empty name")
@@ -225,10 +233,7 @@ func handleOutput(w dns.ResponseWriter, r *dns.Msg) {
 		if "o" == parts[0] {
 			continue
 		}
-		/* Make sure we've not seen this before */
-		if seen, _ := CACHE.ContainsOrAdd(parts[1], true); seen {
-			continue
-		}
+		/* Extract payload */
 		b, err := hex.DecodeString(parts[0])
 		if nil != err {
 			log.Printf(
@@ -239,6 +244,7 @@ func handleOutput(w dns.ResponseWriter, r *dns.Msg) {
 				err,
 			)
 		}
+		/* Send for output */
 		OUT <- b
 	}
 
