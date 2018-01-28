@@ -23,7 +23,7 @@ The included build.sh script can be used to build for a variety of platforms.
 Clients
 -------
 There is no one reference client (i.e. malware) for DNSKitten.  In the
-[`clients`](./clients) directory ~are some~ is an example~s~, but in general, DNSKitten
+[`clients`](./clients) directory are some examples, but in general, DNSKitten
 is client-agnostic.
 
 DNSKitten does no demultiplexing of clients.  In general, it's a pretty simple
