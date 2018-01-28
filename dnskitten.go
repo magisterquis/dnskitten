@@ -216,6 +216,7 @@ func handleOutput(w dns.ResponseWriter, r *dns.Msg) {
 	/* Response message */
 	m := &dns.Msg{}
 	m.SetReply(r)
+	m.MsgHdr.Authoritative = true
 
 	for _, q := range r.Question {
 		/* Ignore case */
@@ -298,11 +299,11 @@ func stdinToIP(v int) (net.IP, error) {
 		return nil, io.EOF
 	}
 
-	/* Convert to base-64, filling empty bytes with ='s */
+	/* Convert to base-64, filling empty bytes with spaces */
 	base64.StdEncoding.Encode(b, in)
 	for i, v := range b {
 		if 0 == v {
-			b[i] = '='
+			b[i] = ' '
 		}
 	}
 
@@ -401,6 +402,7 @@ func inBytes(n uint) []byte {
 		ok bool
 	)
 	/* Try to fill the buffer */
+READLOOP:
 	for i := range b {
 		select {
 		case b[i], ok = <-IN:
@@ -412,12 +414,12 @@ func inBytes(n uint) []byte {
 					return nil
 				}
 				/* Return what we got */
-				b = b[:i]
+				b = b[:i+1]
 				break
 			}
 		default: /* Nothing to read, channel's open */
 			b = b[:i]
-			break
+			break READLOOP
 		}
 	}
 

@@ -52,6 +52,9 @@ can be requested with any of the following record types (qtype):
 | TXT   | A single byte string, up to 128 bytes              |                                                                                 |
 | URI   | Same as TXT, with the Priority and Weight set to 0 |                                                                                 |
 
+A and AAAA records will be space (0x20) padded on the right if the
+base64-encoded data is too short.
+
 Client -> C2
 ------------
 Data to be sent from the Client to the C2 server (e.g. command output) should
